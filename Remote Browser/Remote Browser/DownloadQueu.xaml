@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+    xmlns:local="clr-namespace:Remote_Browser"
+             x:Class="Remote_Browser.DownloadQueu">
+    <StackLayout>
+        <Grid BackgroundColor="DodgerBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="38" />
+            </Grid.RowDefinitions>
+            <Label VerticalOptions="Center" HorizontalOptions="Center" FontSize="Title" Text="Current Downloads" Grid.Row="0" TextColor="White" />
+        </Grid>
+        <ListView x:Name="list"
+            ItemsSource="{Binding Items}"
+            ItemTapped="Handle_ItemTapped"
+            CachingStrategy="RecycleElement">
+            <!--Built in Cells-->
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Text="{Binding Text}"  Grid.Row="0" Grid.Column="0"/>
+                            <local:CustomProgressBar AutomationId="{Binding Text}" Grid.Row="1" Grid.Column="0"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+    <!--Custom View Cells-->
+    <!--
+    <ListView.ItemTemplate>
+      <DataTemplate>
+        <ViewCell>
+          <StackLayout>
+            <Label Text="{Binding Text}" 
+                   d:Text="{Binding .}"
+                   Style="{DynamicResource ListItemTextStyle}" />
+            <Label Text="{Binding Detail}" 
+                   d:Text="Detail"
+                   Style="{DynamicResource ListItemDetailTextStyle}"/>
+          </StackLayout>
+        </ViewCell>
+      </DataTemplate>
+    </ListView.ItemTemplate>
+    -->
+</ContentPage>

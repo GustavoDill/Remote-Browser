@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <RootNamespace>Remote_Browser</RootNamespace>
+    <Copyright>Copyright © 2020 - Gustavo Arend Dill</Copyright>
+    <OutputType>Library</OutputType>
+    <Configurations>Debug;Release;Personal</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="copy-icon.png" />
+    <None Remove="downloads.ico" />
+    <None Remove="folder.png" />
+    <None Remove="settings.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="copy-icon.png" />
+    <EmbeddedResource Include="downloads.ico" />
+    <EmbeddedResource Include="folder.png" />
+    <EmbeddedResource Include="settings.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms" Version="4.5.0.495" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Java.Interop">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v1.0\Java.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Android">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v9.0\Mono.Android.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="DownloadQueu.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Settings.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
