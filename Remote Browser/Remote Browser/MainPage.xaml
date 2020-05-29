@@ -38,17 +38,18 @@
                     <ColumnDefinition Width="70*" />
                     <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
-                <Entry x:Name="hostIp" Placeholder="Host Ip" Grid.Row="0" Text="192.168.0.106" Grid.Column="0" />
-                <Button Clicked="setHost_Clicked" x:Name="setHost" Text="Connect" Grid.Column="1" />
+                <!--<Entry x:Name="hostIp" Placeholder="Host Ip" Grid.Row="0" Text="192.168.0.106" Grid.Column="0" />-->
             </Grid>
             <Grid Margin="0,-5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="70*" />
+                    <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
                 <Entry Text="C:\" x:Name="path" Placeholder="Remote path" Grid.Column="0" Grid.Row="0"/>
+                <Button Clicked="setHost_Clicked" x:Name="setHost" Text="Connect" Grid.Column="1" />
             </Grid>
             <Grid BackgroundColor="DodgerBlue">
                 <Grid.RowDefinitions>

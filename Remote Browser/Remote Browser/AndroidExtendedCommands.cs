@@ -712,7 +712,9 @@ namespace AndroidExtendedCommands
                     public void Connect(IPAddress ip, ushort port)
                     {
                         if (!Connected)
-                        { try { ClientSocket.Connect(ip, port); } catch (Exception ex) { throw ex; } }
+                        { 
+                            try {
+                                ClientSocket.Connect(ip, port); } catch (Exception ex) { throw ex; } }
                     }
                     public bool Connected { get => ClientSocket.Connected; }
                     public void ConnectAsync()

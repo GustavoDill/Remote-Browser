@@ -18,10 +18,36 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Text="Save:" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Label Text="File Save dir:" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
                 <Entry x:Name="savedir" HorizontalTextAlignment="Center" Placeholder="Directory" Text="" Grid.Column="1" />
             </Grid>
-            <Button x:Name="saveBtn" Margin="0,40" Clicked="OnSave" Text="Save" WidthRequest="30" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Text="Connetion Host:" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Entry x:Name="hostIp" HorizontalTextAlignment="Center" Placeholder="Host Ip" Text="" Grid.Column="1" />
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Text="Connection Port:" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Entry x:Name="hostPort" HorizontalTextAlignment="Center" Placeholder="Port" Text="" Grid.Column="1" />
+            </Grid>
+            <Grid Margin="0,32">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="12*" />
+                    <ColumnDefinition Width="76*" />
+                    <ColumnDefinition Width="12*" />
+                </Grid.ColumnDefinitions>
+            <Button x:Name="saveBtn" Clicked="OnSave" Text="Save" Grid.Row="0" Grid.Column="1" />
+            </Grid>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

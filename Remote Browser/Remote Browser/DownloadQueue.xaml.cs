@@ -60,7 +60,6 @@ namespace Remote_Browser
                 { Items.Remove(Items[i]); break; }
             await Device.InvokeOnMainThreadAsync(() => { list.ItemsSource = null; list.ItemsSource = Items; });
         }
-        Thread t;
         async Task<bool> Download(object path)
         {
             var item = (QueueDownload)path;

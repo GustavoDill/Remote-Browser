@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using AndroidExtendedCommands;
 using AndroidExtendedCommands.CSharp.Data.SimpleJSON;
+using Java.Net;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,14 +36,7 @@ namespace Remote_Browser
             new Thread(LoadSettings).Start();
             new Thread(() => settingsImg.Source = ImageSource.FromResource("Remote_Browser.settings.png")).Start();
             new Thread(() => downloadsImg.Source = ImageSource.FromResource("Remote_Browser.downloads.ico")).Start();
-#if DEBUG
-            debug_connection.IsVisible = true;
-#elif PERSONAL
-            debug_connection.IsVisible = true;
-#elif RELEASE
-            debug_connection.IsVisible = false;
-            ConnectToServer();
-#endif
+            //ConnectToServer();
         }
 
         private void Downloads_DownloadFinished(object sender, DownloadQueu.DownloadFinishArgs e)
@@ -60,7 +54,7 @@ namespace Remote_Browser
         void OnSettingsSave()
         {
             Navigation.PopModalAsync(true);
-            var json = JSON.Parse("{\"SaveDirectory\" : \"" + Settings.SaveDirectory + "\"}");
+            var json = JSON.Parse($"{{\"SaveDirectory\" : \"{Settings.SaveDirectory}\", \"HostIp\" : \"{Settings.HostIp}\", \"HostPort\" : \"{Settings.HostPort}\"}}");
             using (var writer = new StreamWriter(SettingsFile))
                 writer.Write(json.ToString());
         }
@@ -72,15 +66,25 @@ namespace Remote_Browser
                 using (var reader = new StreamReader(SettingsFile))
                     config = JSON.Parse(reader.ReadToEnd());
                 if (config != null)
-                    Settings.SaveDirectory = config["SaveDirectory"].Value;
+                {
+                    Settings.HostIp = !string.IsNullOrEmpty(config["HostIp"].Value) ? config["HostIp"].Value : Settings.DEFAULT_CONNECTION_IP;
+                    Settings.HostPort = ushort.TryParse(config["HostPort"].Value, out ushort v) ? ushort.Parse(config["HostPort"].Value) : Settings.DEFAULT_CONNECTION_PORT;
+                    Settings.SaveDirectory = !string.IsNullOrEmpty(config["SaveDirectory"].Value) ? config["SaveDirectory"].Value : Settings.DEFAULT_SAVE_DIRECTORY;
+                }
                 else
+                {
                     Settings.SaveDirectory = Settings.DEFAULT_SAVE_DIRECTORY;
+                    Settings.HostPort = Settings.DEFAULT_CONNECTION_PORT;
+                    Settings.HostIp = Settings.DEFAULT_CONNECTION_IP;
+                }
             }
             else
             {
                 using (var writer = new StreamWriter(SettingsFile))
-                    writer.Write($"{{\"SaveDirectory\" : \"{Settings.DEFAULT_SAVE_DIRECTORY}\"}}");
+                    writer.Write($"{{\"SaveDirectory\" : \"{Settings.DEFAULT_SAVE_DIRECTORY}\", \"HostIp\" : \"{Settings.DEFAULT_CONNECTION_IP}\", \"HostPort\" : \"{Settings.DEFAULT_CONNECTION_PORT}\"}}");
                 Settings.SaveDirectory = Settings.DEFAULT_SAVE_DIRECTORY;
+                Settings.HostPort = Settings.DEFAULT_CONNECTION_PORT;
+                Settings.HostIp = Settings.DEFAULT_CONNECTION_IP;
             }
             Settings.Saved += Settings_Saved;
         }
@@ -105,14 +109,7 @@ namespace Remote_Browser
         Thread connectionThread;
         void ConnectToServer()
         {
-#if DEBUG
-            var ip = hostIp.Text;
-#elif PERSONAL
-            var ip = hostIp.Text;
-#elif RELEASE
-            var ip = SERVER_IP;
-#endif
-            Client = new RemoteBrowserClient(ip, 4782, path.Text) { Activity = Activity };
+            Client = new RemoteBrowserClient(Settings.HostIp, Settings.HostPort, path.Text) { Activity = Activity };
             Downloads.Client = Client;
             if (connectionThread != null)
                 try { connectionThread.Abort(); } catch { }
@@ -121,12 +118,16 @@ namespace Remote_Browser
         }
         void ConnectServer()
         {
-            Client.Connect();
-            Client.SendString(AUTH_CODE);
-            Client.Navigated += Client_Navigated;
-            Client.DirectorySet += Client_DirectorySet;
-            Device.BeginInvokeOnMainThread(() => BindingContext = this);
-            new Thread(new ParameterizedThreadStart(InitialList)).Start(path.Text);
+            try
+            {
+                Client.Connect();
+                Client.SendString(AUTH_CODE);
+                Client.Navigated += Client_Navigated;
+                Client.DirectorySet += Client_DirectorySet;
+                Device.BeginInvokeOnMainThread(() => BindingContext = this);
+                new Thread(new ParameterizedThreadStart(InitialList)).Start(path.Text);
+            }
+            catch (SocketException ex) { Device.BeginInvokeOnMainThread(() => DisplayAlert("Connect to Server", "Failed to connect:\n\n" + ex.Message, "OK")); }
         }
         void InitialList(object p)
         {
