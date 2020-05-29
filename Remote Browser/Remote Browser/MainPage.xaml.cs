@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using AndroidExtendedCommands;
 using AndroidExtendedCommands.CSharp.Data.SimpleJSON;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -17,6 +18,8 @@ namespace Remote_Browser
         public static Activity Activity { get; set; }
         public const string AUTH_CODE = "RemoteBrowser#CODE#";
         public const string SERVER_IP = "192.168.0.106";
+        public const int MAX_DOWNLOAD_QUEUE = 1;
+        public const long MAX_FILE_SIZE = 104857600;
         public string SettingsFile { get => Settings.SettingsFile; }
         public Settings Settings { get; set; }
         public DownloadQueu Downloads { get; set; }
@@ -28,6 +31,7 @@ namespace Remote_Browser
             path.Completed += Path_Completed;
             Settings = new Settings();
             Downloads = new DownloadQueu() { Settings = Settings, Client = Client };
+            Downloads.DownloadFinished += Downloads_DownloadFinished;
             new Thread(LoadSettings).Start();
             new Thread(() => settingsImg.Source = ImageSource.FromResource("Remote_Browser.settings.png")).Start();
             new Thread(() => downloadsImg.Source = ImageSource.FromResource("Remote_Browser.downloads.ico")).Start();
@@ -39,6 +43,12 @@ namespace Remote_Browser
             debug_connection.IsVisible = false;
             ConnectToServer();
 #endif
+        }
+
+        private void Downloads_DownloadFinished(object sender, DownloadQueu.DownloadFinishArgs e)
+        {
+            Activity.RunOnUiThread(() => DisplayAlert("Download finished", "Download of the file has finished", "OK"));
+            //Activity.RunOnUiThread(() => Android.Widget.Toast.MakeText(Activity, e.ToString(), Android.Widget.ToastLength.Short));
         }
 
         private void Settings_Saved(object sender, System.EventArgs e)
@@ -76,16 +86,21 @@ namespace Remote_Browser
         }
         private void Path_Completed(object sender, System.EventArgs e)
         {
-            if (Client.Connected)
+            if (Client != null)
             {
-                if (Client.SetDirectory(path.Text))
-                    path.Text = Client.CurrentDirectory;
-                else
+                if (Client.Connected)
                 {
-                    path.Text = Client.CurrentDirectory;
-                    Device.BeginInvokeOnMainThread(() => DisplayAlert("Navigate Directory", "Directory does not exist!", "OK"));
+                    if (Client.SetDirectory(path.Text))
+                        path.Text = Client.CurrentDirectory;
+                    else
+                    {
+                        path.Text = Client.CurrentDirectory;
+                        Device.BeginInvokeOnMainThread(() => DisplayAlert("Navigate Directory", "Directory does not exist!", "OK"));
+                    }
                 }
             }
+            else
+                Device.BeginInvokeOnMainThread(() => DisplayAlert("Navigate Directory", "Please connect to server first!", "OK"));
         }
         Thread connectionThread;
         void ConnectToServer()
@@ -213,7 +228,21 @@ namespace Remote_Browser
             if (p.Length == 2)
                 p += "\\";
             var pt = System.IO.Path.Combine(p, itemText.ToString()).Replace("/", "\\");
-            await Downloads.AddDownloadToQueue(pt);
+            if (Downloads.Items.Count < MAX_DOWNLOAD_QUEUE)
+            {
+                var fileSize = Client.GetFileSize(pt);
+                if (fileSize.Contains("ERROR_FILE_INEXISTENT"))
+                    Device.BeginInvokeOnMainThread(() => DisplayAlert("Download file", "File does not exist", "OK"));
+                else
+                {
+                    if (!(Convert.ToInt64(fileSize, 16) > MAX_FILE_SIZE))
+                        await Downloads.AddDownloadToQueue(pt);
+                    else
+                        Device.BeginInvokeOnMainThread(() => DisplayAlert("Download file", "File too big!\n (File Size: " + (Convert.ToInt64(fileSize, 16) / 1024 / 1024).ToString() + "MB - Max size: " + (MAX_FILE_SIZE / 1024 / 1024).ToString() + "MB)", "OK"));
+                }
+            }
+            else
+                Device.BeginInvokeOnMainThread(() => DisplayAlert("Download file", "Max download queue already achieved! Wait for a file to download and then add this file to the queue", "OK"));
         }
         public void ItemClick(object param)
         {

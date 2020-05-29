@@ -138,4 +138,10 @@ public class RemoteBrowserClient : TCPClient
         set { oldDir = currentDirectory; currentDirectory = value; }
     }
 
+    public string GetFileSize(string file)
+    {
+        SendCommand("GetFileSize", file);
+        var size = ReceivePackage();
+        return size;
+    }
 }

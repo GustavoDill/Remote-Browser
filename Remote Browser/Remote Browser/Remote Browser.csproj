@@ -43,7 +43,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="DownloadQueu.xaml">
+    <Compile Update="DownloadQueue.xaml.cs">
+      <DependentUpon>DownloadQueue.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="DownloadQueue.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Settings.xaml">
