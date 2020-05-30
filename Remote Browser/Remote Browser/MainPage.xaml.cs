@@ -18,7 +18,6 @@ namespace Remote_Browser
         public RemoteBrowserClient Client { get; private set; }
         public static Activity Activity { get; set; }
         public const string AUTH_CODE = "RemoteBrowser#CODE#";
-        public const string SERVER_IP = "192.168.0.106";
         public const int MAX_DOWNLOAD_QUEUE = 1;
         public const long MAX_FILE_SIZE = 104857600;
         public string SettingsFile { get => Settings.SettingsFile; }
@@ -28,9 +27,10 @@ namespace Remote_Browser
         {
             InitializeComponent();
             DisplayList = new List<DisplayItem>();
+
             //File.Delete(SettingsFile);
             path.Completed += Path_Completed;
-            Settings = new Settings();
+            Settings = new Settings() { ParentPage = this };
             Downloads = new DownloadQueu() { Settings = Settings, Client = Client };
             Downloads.DownloadFinished += Downloads_DownloadFinished;
             new Thread(LoadSettings).Start();
@@ -38,7 +38,11 @@ namespace Remote_Browser
             new Thread(() => downloadsImg.Source = ImageSource.FromResource("Remote_Browser.downloads.ico")).Start();
             //ConnectToServer();
         }
-
+        public bool ConnectButtonEnabled
+        {
+            get => connectBtn.IsEnabled;
+            set => Device.BeginInvokeOnMainThread(() => connectBtn.IsEnabled = value);
+        }
         private void Downloads_DownloadFinished(object sender, DownloadQueu.DownloadFinishArgs e)
         {
             Activity.RunOnUiThread(() => DisplayAlert("Download finished", "Download of the file has finished", "OK"));
@@ -54,7 +58,9 @@ namespace Remote_Browser
         void OnSettingsSave()
         {
             Navigation.PopModalAsync(true);
-            var json = JSON.Parse($"{{\"SaveDirectory\" : \"{Settings.SaveDirectory}\", \"HostIp\" : \"{Settings.HostIp}\", \"HostPort\" : \"{Settings.HostPort}\"}}");
+            var json = JSON.Parse($"{{\"SaveDirectory\" : \"{Settings.SaveDirectory}\", \"Servers\" : []}}");
+            foreach (var server in Settings.AvaliableServers)
+                json["Servers"].Add(server.GetJSON());
             using (var writer = new StreamWriter(SettingsFile))
                 writer.Write(json.ToString());
         }
@@ -67,24 +73,25 @@ namespace Remote_Browser
                     config = JSON.Parse(reader.ReadToEnd());
                 if (config != null)
                 {
-                    Settings.HostIp = !string.IsNullOrEmpty(config["HostIp"].Value) ? config["HostIp"].Value : Settings.DEFAULT_CONNECTION_IP;
-                    Settings.HostPort = ushort.TryParse(config["HostPort"].Value, out ushort v) ? ushort.Parse(config["HostPort"].Value) : Settings.DEFAULT_CONNECTION_PORT;
+                    List<ConnectionServer> avaliableServers = new List<ConnectionServer>();
+                    if (!(config["Servers"] == null))
+                        for (int i = 0; i < config["Servers"].Count; i++)
+                            avaliableServers.Add(config["Servers"][i]);
+                    Settings.AvaliableServers = avaliableServers;
+                    Settings.UpdateList();
                     Settings.SaveDirectory = !string.IsNullOrEmpty(config["SaveDirectory"].Value) ? config["SaveDirectory"].Value : Settings.DEFAULT_SAVE_DIRECTORY;
                 }
                 else
                 {
                     Settings.SaveDirectory = Settings.DEFAULT_SAVE_DIRECTORY;
-                    Settings.HostPort = Settings.DEFAULT_CONNECTION_PORT;
-                    Settings.HostIp = Settings.DEFAULT_CONNECTION_IP;
                 }
+
             }
             else
             {
                 using (var writer = new StreamWriter(SettingsFile))
-                    writer.Write($"{{\"SaveDirectory\" : \"{Settings.DEFAULT_SAVE_DIRECTORY}\", \"HostIp\" : \"{Settings.DEFAULT_CONNECTION_IP}\", \"HostPort\" : \"{Settings.DEFAULT_CONNECTION_PORT}\"}}");
+                    writer.Write($"{{\"SaveDirectory\" : \"{Settings.DEFAULT_SAVE_DIRECTORY}\", \"Servers\" : []}}");
                 Settings.SaveDirectory = Settings.DEFAULT_SAVE_DIRECTORY;
-                Settings.HostPort = Settings.DEFAULT_CONNECTION_PORT;
-                Settings.HostIp = Settings.DEFAULT_CONNECTION_IP;
             }
             Settings.Saved += Settings_Saved;
         }
@@ -107,16 +114,18 @@ namespace Remote_Browser
                 Device.BeginInvokeOnMainThread(() => DisplayAlert("Navigate Directory", "Please connect to server first!", "OK"));
         }
         Thread connectionThread;
-        void ConnectToServer()
+        void CreateConnection()
         {
-            Client = new RemoteBrowserClient(Settings.HostIp, Settings.HostPort, path.Text) { Activity = Activity };
+            Client = Settings.SelectedHost.CreateConnection(path.Text);
+            Client.Activity = Activity;
+            //Client = new RemoteBrowserClient(Settings.HostIp, Settings.HostPort, path.Text, 0) { Activity = Activity };
             Downloads.Client = Client;
             if (connectionThread != null)
                 try { connectionThread.Abort(); } catch { }
-            connectionThread = new Thread(ConnectServer);
+            connectionThread = new Thread(ConnectToServer);
             connectionThread.Start();
         }
-        void ConnectServer()
+        void ConnectToServer()
         {
             try
             {
@@ -126,6 +135,7 @@ namespace Remote_Browser
                 Client.DirectorySet += Client_DirectorySet;
                 Device.BeginInvokeOnMainThread(() => BindingContext = this);
                 new Thread(new ParameterizedThreadStart(InitialList)).Start(path.Text);
+                Device.BeginInvokeOnMainThread(() => connectBtn.Text = "Disconnect");
             }
             catch (SocketException ex) { Device.BeginInvokeOnMainThread(() => DisplayAlert("Connect to Server", "Failed to connect:\n\n" + ex.Message, "OK")); }
         }
@@ -256,11 +266,25 @@ namespace Remote_Browser
                 new Thread(new ParameterizedThreadStart(RetrieveFile)).Start(item.Text);
         }
 
-        private void setHost_Clicked(object sender, System.EventArgs e)
+        private void connect_Clicked(object sender, System.EventArgs e)
         {
-            ConnectToServer();
+            if (((Button)sender).Text.ToUpper() == "CONNECT")
+                CreateConnection();
+            else
+                CloseConnection();
         }
-
+        public void CloseConnection()
+        {
+            if (Client.Connected)
+            {
+                Client.SendCommand("CLOSE-CONNECTION");
+                Thread.Sleep(50);
+                Client.Disconnect();
+            }
+            else
+                Client.SendCommand("CLOSE-CONNECTION");
+            Device.BeginInvokeOnMainThread(() => connectBtn.Text = "Connect");
+        }
         private void settingsImg_Tapped(object sender, System.EventArgs e)
         {
             ShowSettings();
@@ -274,6 +298,7 @@ namespace Remote_Browser
         {
             Navigation.PushModalAsync(Downloads, true);
         }
+
     }
     public class DisplayItem
     {

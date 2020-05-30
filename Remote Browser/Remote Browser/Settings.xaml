@@ -13,40 +13,80 @@
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" HorizontalOptions="Center" Text="Settings" FontSize="Title" />
             </Grid>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Label Text="File Save dir:" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
-                <Entry x:Name="savedir" HorizontalTextAlignment="Center" Placeholder="Directory" Text="" Grid.Column="1" />
-            </Grid>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Label Text="Connetion Host:" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
-                <Entry x:Name="hostIp" HorizontalTextAlignment="Center" Placeholder="Host Ip" Text="" Grid.Column="1" />
-            </Grid>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Label Text="Connection Port:" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
-                <Entry x:Name="hostPort" HorizontalTextAlignment="Center" Placeholder="Port" Text="" Grid.Column="1" />
-            </Grid>
-            <Grid Margin="0,32">
+            <Grid RowSpacing="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="12*" />
-                    <ColumnDefinition Width="76*" />
-                    <ColumnDefinition Width="12*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-            <Button x:Name="saveBtn" Clicked="OnSave" Text="Save" Grid.Row="0" Grid.Column="1" />
+                
+                <Label Text="File Save dir:" Grid.Row="0" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Entry x:Name="savedir" Grid.Row="0" HorizontalTextAlignment="Center" Placeholder="Directory" Text="" Grid.Column="1" />
+                
+                <Label Text="Server Name:" Grid.Row="1" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Entry x:Name="serverName" TextChanged="serverName_TextChanged" Grid.Row="1" HorizontalTextAlignment="Center" Placeholder="Server Name" Text="" Grid.Column="1" />
+                
+                <Label Text="Public Host:" Grid.Column="0" Grid.Row="2" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Entry x:Name="publicHost" TextChanged="publicHost_TextChanged"  HorizontalTextAlignment="Center" Grid.Row="2" Placeholder="Public Ip/Host" Text="" Grid.Column="1" />
+                
+                <Label Text="Lan Host:" Grid.Row="3" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Entry x:Name="lanHost" TextChanged="lanHost_TextChanged" Grid.Row="3" HorizontalTextAlignment="Center" Placeholder="Host Lan Ip" Text="" Grid.Column="1" />
+                
+                <Label Text="Port:" Grid.Row="4" Grid.Column="0" VerticalOptions="Center"  HorizontalOptions="Center" FontSize="Large"/>
+                <Entry x:Name="hostPort" TextChanged="hostPort_TextChanged" Grid.Row="4" HorizontalTextAlignment="Center" Placeholder="Port" Text="" Grid.Column="1" />
+            </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="33*" />
+                    <ColumnDefinition Width="33*" />
+                    <ColumnDefinition Width="33*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="editBtn" Clicked="modBtn_Clicked"  Text="Edit" IsEnabled="False" Grid.Row="0" Grid.Column="0" />
+                <Button x:Name="addBtn" Clicked="addBtn_Clicked" Text="Add" IsEnabled="False" Grid.Row="0" Grid.Column="1" />
+                <Button x:Name="removeBtn" Clicked="removeBtn_Clicked" Text="Remove" IsEnabled="False" Grid.Row="0" Grid.Column="2" />
+            </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Button x:Name="saveBtn" Clicked="OnSave" Text="Save Settings" />
+            </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150" />
+                </Grid.RowDefinitions>
+                <ListView x:Name="servers" BackgroundColor="Gray" ItemTapped="servers_ItemTapped" ItemsSource="{Binding AvaliableServers}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="19.5" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="53*"/>
+                                        <ColumnDefinition Width="32*"/>
+                                        <ColumnDefinition Width="15*"/>
+                                    </Grid.ColumnDefinitions>
+                                <Label Text="{Binding ServerName}" FontSize="Medium"
+                                       Grid.Row="0" FontAttributes="Bold"/>
+                                    <Label Text="{Binding PublicHost}"
+                                       Grid.Row="1" Grid.Column="0" FontSize="Small"/>
+                                    <Label Text="{Binding LanIp}"
+                                       Grid.Row="1" Grid.Column="1" FontSize="Small"/>
+                                    <Label Text="{Binding Port}"
+                                       Grid.Row="1" Grid.Column="2" FontSize="Small"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
         </StackLayout>
     </ContentPage.Content>

@@ -26,6 +26,13 @@ public class RemoteBrowserClient : TCPClient
         SendCommand("CLIENT-SHUTDOWN");
         Disconnect();
     }
+    public RemoteBrowserClient(string hostName, ushort port, string initialDirectory, int addressListIndex = 0)
+    {
+        Ip = Dns.GetHostAddresses(hostName)[addressListIndex];
+        Port = port;
+        CurrentDirectory = initialDirectory;
+        RemoteBrowserInnerErrorHandler.clientInstance = this;
+    }
     public RemoteBrowserClient(string ip, ushort port, string initialDirectory = "C:\\")
     {
         Ip = IPAddress.Parse(ip);

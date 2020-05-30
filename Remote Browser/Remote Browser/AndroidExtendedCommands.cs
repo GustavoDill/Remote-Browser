@@ -4,7 +4,6 @@ using AndroidExtendedCommands.CSharp.DataTypeExtensions;
 using AndroidExtendedCommands.CSharp.DataTypeExtensions.RegularExpressions;
 using AndroidExtendedCommands.CSharp.Info;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -643,6 +642,15 @@ namespace AndroidExtendedCommands
                         Port = port;
                         Ip = ip;
                     }
+                    public TCPClient(string hostName, ushort port = 0, int addressListIndex = 0)
+                    {
+                        Ip = Dns.GetHostAddresses(hostName)[addressListIndex];
+                        if (port != 0)
+                            Port = port;
+                        else
+                            Port = ushort.Parse(new Random().Next(888, int.Parse(ushort.MaxValue.ToString())).ToString());
+                        Setup();
+                    }
                     public TCPClient(Socket clientSocket)
                     {
                         ClientSocket = clientSocket;
@@ -712,9 +720,13 @@ namespace AndroidExtendedCommands
                     public void Connect(IPAddress ip, ushort port)
                     {
                         if (!Connected)
-                        { 
-                            try {
-                                ClientSocket.Connect(ip, port); } catch (Exception ex) { throw ex; } }
+                        {
+                            try
+                            {
+                                ClientSocket.Connect(ip, port);
+                            }
+                            catch (Exception ex) { throw ex; }
+                        }
                     }
                     public bool Connected { get => ClientSocket.Connected; }
                     public void ConnectAsync()
@@ -897,6 +909,15 @@ namespace AndroidExtendedCommands
                 }
                 public class TCPServer
                 {
+                    public TCPServer(string hostName, ushort port = 0, int addressListIndex = 0)
+                    {
+                        Ip = Dns.GetHostAddresses(hostName)[addressListIndex];
+                        if (port != 0)
+                            Port = port;
+                        else
+                            Port = ushort.Parse(new Random().Next(888, int.Parse(ushort.MaxValue.ToString())).ToString());
+                        Setup();
+                    }
                     public TCPServer(string ip, ushort port = 0)
                     {
                         if (!string.IsNullOrEmpty(ip) && Regex.IsMatch(ip, @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
@@ -2217,8 +2238,8 @@ namespace AndroidExtendedCommands
         namespace Data
         {
             using System;
-            using System.IO;
             using System.Collections;
+            using System.IO;
 
             public class IniFile
             {
@@ -8168,6 +8189,21 @@ namespace AndroidExtendedCommands
                 public static IPAddress[] LocalAddressList
                 {
                     get => System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName()).AddressList;
+                }
+                public static IPAddress ExternalIpAddress
+                {
+                    get
+                    {
+                        try
+                        {
+                            var req = new WebClient().DownloadString("http://ifconfig.me");
+                            if (IPAddress.TryParse(req, out IPAddress _))
+                                return IPAddress.Parse(req);
+                            else
+                                return null;
+                        }
+                        catch { return null; }
+                    }
                 }
             }
         }

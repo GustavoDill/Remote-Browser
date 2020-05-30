@@ -49,7 +49,7 @@
                     <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
                 <Entry Text="C:\" x:Name="path" Placeholder="Remote path" Grid.Column="0" Grid.Row="0"/>
-                <Button Clicked="setHost_Clicked" x:Name="setHost" Text="Connect" Grid.Column="1" />
+                <Button Clicked="connect_Clicked" x:Name="connectBtn" IsEnabled="False" Text="Connect" Grid.Column="1" />
             </Grid>
             <Grid BackgroundColor="DodgerBlue">
                 <Grid.RowDefinitions>
