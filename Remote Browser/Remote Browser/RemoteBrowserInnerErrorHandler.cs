@@ -1,14 +1,23 @@
-﻿using static RemoteBrowserClient;
+﻿using System;
+using static RemoteBrowserClient;
 
 namespace Remote_Browser
 {
     public static class RemoteBrowserInnerErrorHandler
     {
         public static RemoteBrowserClient clientInstance;
-        public static DirectoryList CONNECTION_ENDED()
+        public static T CONNECTION_ENDED<T>(object objType)
         {
             clientInstance.Shutdown();
-            return new DirectoryList(new string[] { "CONNECTION CLOSED" }, new string[] { "CONNECTION CLOSED" });
+            if (objType.GetType() == typeof(DirectoryList))
+            {
+                return (T)Convert.ChangeType(new DirectoryList(new string[] { "CONNECTION CLOSED" }, new string[] { "CONNECTION CLOSED" }), typeof(T));
+            }
+            else if (objType.GetType() == typeof(string[]))
+            {
+                return (T)Convert.ChangeType(new string[] { "CONNECTION ENDED" }, typeof(T));
+            }
+            return (T)(null as object);
         }
         public static DirectoryList ACCESS_DENIED()
         {

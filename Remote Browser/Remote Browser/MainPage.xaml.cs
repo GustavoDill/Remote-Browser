@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using Xamarin.Forms;
+
 namespace Remote_Browser
 {
     // Learn more about making custom code visible in the Xamarin.Forms previewer
@@ -23,6 +24,7 @@ namespace Remote_Browser
         public string SettingsFile { get => Settings.SettingsFile; }
         public Settings Settings { get; set; }
         public DownloadQueu Downloads { get; set; }
+        public Search Search { get; set; }
         public MainPage()
         {
             InitializeComponent();
@@ -32,10 +34,15 @@ namespace Remote_Browser
             path.Completed += Path_Completed;
             Settings = new Settings() { ParentPage = this };
             Downloads = new DownloadQueu() { Settings = Settings, Client = Client };
+            Search = new Search() { ParentPage = this };
             Downloads.DownloadFinished += Downloads_DownloadFinished;
             new Thread(LoadSettings).Start();
-            new Thread(() => settingsImg.Source = ImageSource.FromResource("Remote_Browser.settings.png")).Start();
-            new Thread(() => downloadsImg.Source = ImageSource.FromResource("Remote_Browser.downloads.ico")).Start();
+            new Thread(() =>
+            {
+                settingsImg.Source = ImageSource.FromResource("Remote_Browser.settings.png");
+                downloadsImg.Source = ImageSource.FromResource("Remote_Browser.downloads.ico");
+                searchImg.Source = ImageSource.FromResource("Remote_Browser.search.ico");
+            }).Start();
             //ConnectToServer();
         }
         public bool ConnectButtonEnabled
@@ -285,6 +292,16 @@ namespace Remote_Browser
                 Client.SendCommand("CLOSE-CONNECTION");
             Device.BeginInvokeOnMainThread(() => connectBtn.Text = "Connect");
         }
+        private void searchImg_Tapped(object sender, EventArgs e)
+        {
+            if (Client != null)
+                if (Client.Connected)
+                    ShowSearch();
+        }
+        void ShowSearch()
+        {
+            Navigation.PushModalAsync(Search, true);
+        }
         private void settingsImg_Tapped(object sender, System.EventArgs e)
         {
             ShowSettings();
@@ -299,6 +316,10 @@ namespace Remote_Browser
             Navigation.PushModalAsync(Downloads, true);
         }
 
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        {
+
+        }
     }
     public class DisplayItem
     {

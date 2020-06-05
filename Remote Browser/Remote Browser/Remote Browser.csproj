@@ -18,6 +18,7 @@
     <None Remove="copy-icon.png" />
     <None Remove="downloads.ico" />
     <None Remove="folder.png" />
+    <None Remove="search.ico" />
     <None Remove="settings.png" />
   </ItemGroup>
 
@@ -25,6 +26,7 @@
     <EmbeddedResource Include="copy-icon.png" />
     <EmbeddedResource Include="downloads.ico" />
     <EmbeddedResource Include="folder.png" />
+    <EmbeddedResource Include="search.ico" />
     <EmbeddedResource Include="settings.png" />
   </ItemGroup>
 
@@ -50,6 +52,9 @@
 
   <ItemGroup>
     <EmbeddedResource Update="DownloadQueue.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Search.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Settings.xaml">

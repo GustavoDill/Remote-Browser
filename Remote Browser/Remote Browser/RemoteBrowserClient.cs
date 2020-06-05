@@ -47,6 +47,32 @@ public class RemoteBrowserClient : TCPClient
         s += args != null ? ": \"" + args + "\"" : "";
         SendPackage(new TcpPackage(s));
     }
+    public string[] SearchFile(string term)
+    {
+        SendCommand("SEARCH-ARCHIVE", term);
+        string package;
+        try
+        {
+            package = ReceivePackage().ToString();
+        }
+        catch
+        {
+            return RemoteBrowserInnerErrorHandler.CONNECTION_ENDED<string[]>(new string[] { });
+        }
+        if (package == "EMPTY")
+        {
+            return new string[] { };
+        }
+        else
+        {
+            var arra = package.Split(';', '\t');
+            List<string> re = new List<string>();
+            foreach (var a in arra)
+                if (a != "")
+                    re.Add(a);
+            return re.ToArray();
+        }
+    }
     public DirectoryList ListDirectory()
     {
         if (CurrentDirectory == null)
@@ -61,7 +87,7 @@ public class RemoteBrowserClient : TCPClient
         }
         catch
         {
-            return RemoteBrowserInnerErrorHandler.CONNECTION_ENDED();
+            return RemoteBrowserInnerErrorHandler.CONNECTION_ENDED<DirectoryList>(new DirectoryList(null, null));
         }
         if (typeof(RemoteBrowserInnerErrorHandler).GetMethod(package.Replace(" ", "_")) != null)
         {

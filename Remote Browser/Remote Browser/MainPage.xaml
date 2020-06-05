@@ -14,17 +14,23 @@
                     <RowDefinition Height="44"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="78*"/>
+                    <ColumnDefinition Width="66*"/>
+                    <ColumnDefinition Width="12*"/>
                     <ColumnDefinition Width="10*"/>
                     <ColumnDefinition Width="12*"/>
                 </Grid.ColumnDefinitions>
                 <Label Text="Remote Browser" VerticalOptions="Center" FontSize="Title"  TextColor="White" HorizontalOptions="Start" Margin="10,0"  />
-                <Image x:Name="downloadsImg" WidthRequest="25" HeightRequest="25" VerticalOptions="Center" Grid.Row="0" Grid.Column="1" >
+                <Image x:Name="searchImg" WidthRequest="25" HeightRequest="25" VerticalOptions="Center" Grid.Row="0" Grid.Column="1" >
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="searchImg_Tapped" NumberOfTapsRequired="1" />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Image x:Name="downloadsImg" WidthRequest="25" HeightRequest="25" VerticalOptions="Center" Grid.Row="0" Grid.Column="2" >
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer Tapped="downloadsImg_Tapped" NumberOfTapsRequired="1" />
                     </Image.GestureRecognizers>
                 </Image>
-                <Image x:Name="settingsImg" WidthRequest="25" HeightRequest="25" VerticalOptions="Center" Grid.Row="0" Grid.Column="2" >
+                <Image x:Name="settingsImg" WidthRequest="25" HeightRequest="25" VerticalOptions="Center" Grid.Row="0" Grid.Column="3" >
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer Tapped="settingsImg_Tapped" NumberOfTapsRequired="1" />
                     </Image.GestureRecognizers>
