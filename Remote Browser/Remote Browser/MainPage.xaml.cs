@@ -238,7 +238,8 @@ namespace Remote_Browser
                 oldItem = e.Item;
             else
                 new Thread(new ParameterizedThreadStart(ItemClick)).Start(e.Item);
-
+            var details = new DisplayItemDetails(Client, "D:\\.ProgramsVS\\Esquema rele.png");
+            details.RequestDetails();
         }
         async void RetrieveFile(object itemText)
         {

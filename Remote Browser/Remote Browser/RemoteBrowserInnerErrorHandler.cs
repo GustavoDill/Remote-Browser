@@ -19,6 +19,10 @@ namespace Remote_Browser
             }
             return (T)(null as object);
         }
+        public static void ERROR_FILE_INEXISTENT()
+        {
+
+        }
         public static DirectoryList ACCESS_DENIED()
         {
             clientInstance.CurrentDirectory = clientInstance.oldDir;
