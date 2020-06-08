@@ -18,6 +18,7 @@ namespace Remote_Browser
     {
         public RemoteBrowserClient Client { get; private set; }
         public static Activity Activity { get; set; }
+        public static ImageSource ReturnButtonImg { get; set; }
         public const string AUTH_CODE = "RemoteBrowser#CODE#";
         public const int MAX_DOWNLOAD_QUEUE = 1;
         public const long MAX_FILE_SIZE = 104857600;
@@ -32,17 +33,18 @@ namespace Remote_Browser
 
             //File.Delete(SettingsFile);
             path.Completed += Path_Completed;
+            new Thread(() =>
+            {
+                ReturnButtonImg = ImageSource.FromResource("Remote_Browser.Icons.return.ico");
+                settingsImg.Source = ImageSource.FromResource("Remote_Browser.Icons.settings.png");
+                downloadsImg.Source = ImageSource.FromResource("Remote_Browser.Icons.downloads.ico");
+                searchImg.Source = ImageSource.FromResource("Remote_Browser.Icons.search.ico");
+            }).Start();
             Settings = new Settings() { ParentPage = this };
             Downloads = new DownloadQueu() { Settings = Settings, Client = Client };
             Search = new Search() { ParentPage = this };
             Downloads.DownloadFinished += Downloads_DownloadFinished;
             new Thread(LoadSettings).Start();
-            new Thread(() =>
-            {
-                settingsImg.Source = ImageSource.FromResource("Remote_Browser.settings.png");
-                downloadsImg.Source = ImageSource.FromResource("Remote_Browser.downloads.ico");
-                searchImg.Source = ImageSource.FromResource("Remote_Browser.search.ico");
-            }).Start();
             //ConnectToServer();
         }
         public bool ConnectButtonEnabled
@@ -241,12 +243,9 @@ namespace Remote_Browser
             var details = new DisplayItemDetails(Client, "D:\\.ProgramsVS\\Esquema rele.png");
             details.RequestDetails();
         }
-        async void RetrieveFile(object itemText)
+        public async void RetrieveFile(object itemPath)
         {
-            var p = await Device.InvokeOnMainThreadAsync(() => { return Client.CurrentDirectory; });
-            if (p.Length == 2)
-                p += "\\";
-            var pt = System.IO.Path.Combine(p, itemText.ToString()).Replace("/", "\\");
+            var pt = itemPath.ToString();
             if (Downloads.Items.Count < MAX_DOWNLOAD_QUEUE)
             {
                 var fileSize = Client.GetFileSize(pt);
@@ -263,7 +262,7 @@ namespace Remote_Browser
             else
                 Device.BeginInvokeOnMainThread(() => DisplayAlert("Download file", "Max download queue already achieved! Wait for a file to download and then add this file to the queue", "OK"));
         }
-        public void ItemClick(object param)
+        public async void ItemClick(object param)
         {
             var item = (DisplayItem)param;
             if (item.Text == "..")
@@ -271,7 +270,14 @@ namespace Remote_Browser
             else if (item.typeString == "Directory")
                 Client.Navigate(item.Text);
             else
-                new Thread(new ParameterizedThreadStart(RetrieveFile)).Start(item.Text);
+            {
+                var p = await Device.InvokeOnMainThreadAsync(() => { return Client.CurrentDirectory; });
+                if (p.Length == 2)
+                    p += "\\";
+                var pt = System.IO.Path.Combine(p, item.Text).Replace("/", "\\");
+                new Thread(new ParameterizedThreadStart(RetrieveFile)).Start(pt);
+            }
+
         }
 
         private void connect_Clicked(object sender, System.EventArgs e)
@@ -329,17 +335,19 @@ namespace Remote_Browser
             Text = text;
             this.typeString = type;
         }
+        public DisplayItem() { }
         public string typeString = "";
-        public string Text { get; }
+        public string Text { get; internal set; }
         public ImageSource Type
         {
             get
             {
-                switch (typeString)
-                {
-                    case "Directory": return ImageSource.FromResource("Remote_Browser.folder.png");
-                    default: return ImageSource.FromResource("Remote_Browser.copy-icon.png");
-                }
+                if (typeString == "Directory")
+                    return ImageSource.FromResource("Remote_Browser.Icons.folder.png");
+                else if (typeString == typeof(DirectoryInfo).Name)
+                    return ImageSource.FromResource("Remote_Browser.Icons.folder.png");
+                else
+                    return ImageSource.FromResource("Remote_Browser.Icons.copy-icon.png");
             }
         }
     }

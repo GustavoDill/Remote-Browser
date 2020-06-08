@@ -19,6 +19,7 @@ namespace Remote_Browser.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             MainPage.Activity = this;
+            //App.detail_resource_id = Resource.Layout.detail_dialog;
             LoadApplication(new App());
             ph = new PermissionHandler(Manifest.Permission.Internet, Manifest.Permission.WriteExternalStorage, Manifest.Permission.ReadExternalStorage);
             ph.RequestAllPermissions();

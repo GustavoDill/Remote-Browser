@@ -21,15 +21,16 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Serialization;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace AndroidExtendedCommands
 {
     namespace Extensions
     {
         [ContentProperty(nameof(Source))]
-        public class ImageResourceExtension : Image
+        public class ImageResourceExtension : IMarkupExtension
         {
-            public new string Source { get; set; }
+            public string Source { get; set; }
 
             public object ProvideValue(IServiceProvider serviceProvider)
             {

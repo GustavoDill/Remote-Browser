@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Remote_Browser.DetailDialog">
+    <ContentPage.Content>
+        <StackLayout>
+            <Grid BackgroundColor="DodgerBlue">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
+                </Grid.RowDefinitions>
+                <Label Text="Archive Details" VerticalOptions="Center"  HorizontalOptions="Center" TextColor="White" FontSize="Large"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+            <Label Text="Name: " x:Name="itemName" Grid.Column="0" Grid.Row="0" />
+            <Label Text="Type: " x:Name="type" Grid.Column="0" Grid.Row="1" />
+            <Label Text="Size: " x:Name="sz" Grid.Column="0" Grid.Row="2" />
+            <Label Text="FullName: " x:Name="itemFullName" Grid.Column="0" Grid.Row="3"/>
+                <Label Text="ParentDir: " x:Name="itemDirectory" Grid.Column="0" Grid.Row="4" />
+            </Grid>
+            <Button Text="Download" x:Name="downloadBtn" Clicked="Button_Clicked" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -4,14 +4,28 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
+             xmlns:local="clr-namespace:AndroidExtendedCommands.Extensions"
              x:Class="Remote_Browser.Search">
     <ContentPage.Content>
         <StackLayout>
             <Grid BackgroundColor="DodgerBlue">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="38" />
+                    <RowDefinition Height="32"/>
                 </Grid.RowDefinitions>
-                <Label VerticalOptions="Center" HorizontalOptions="Center" FontSize="Title" Text="Search" Grid.Row="0" TextColor="White" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="12*" />
+                    <ColumnDefinition Width="88*" />
+                </Grid.ColumnDefinitions>
+                <Grid VerticalOptions="Center">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="24" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+            <ImageButton Grid.Row="0" Grid.Column="0" HeightRequest="24" BackgroundColor="DodgerBlue" Source="{local:ImageResource Remote_Browser.Icons.return.ico}" x:Name="returnBtn" Clicked="returnBtn_Clicked" VerticalOptions="Center" />
+                </Grid>
+                <Label VerticalOptions="Center" Grid.Row="0" HorizontalOptions="Center" FontSize="Title" Text="Search" Grid.Column="1" TextColor="White" />
             </Grid>
             <Grid>
                 <Grid.RowDefinitions>
@@ -25,7 +39,8 @@
                 </Grid.RowDefinitions>
                 <Label Text="" />
             </Grid>
-            <ListView x:Name="resultView" ItemsSource="{Binding Items}">
+            <Label Text="" x:Name="totResults" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <ListView ItemTapped="resultView_ItemTapped" x:Name="resultView" ItemsSource="{Binding Items}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>

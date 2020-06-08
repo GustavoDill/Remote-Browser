@@ -1,6 +1,4 @@
-﻿using Android.App;
-
-namespace Remote_Browser
+﻿namespace Remote_Browser
 {
     public partial class App : Xamarin.Forms.Application
     {
@@ -11,6 +9,7 @@ namespace Remote_Browser
             browser = new MainPage() { };
             MainPage = browser;
         }
+        public static int detail_resource_id;
         protected override void OnStart()
         {
         }

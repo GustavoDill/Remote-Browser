@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using AndroidExtendedCommands.CSharp.Data.SimpleJSON;
 using AndroidExtendedCommands.CSharp.Web.Communication;
 using Java.Lang;
 using Remote_Browser;
@@ -47,7 +48,7 @@ public class RemoteBrowserClient : TCPClient
         s += args != null ? ": \"" + args + "\"" : "";
         SendPackage(new TcpPackage(s));
     }
-    public string[] SearchFile(string term)
+    public Search.DisplaySearchItem[] SearchFile(string term)
     {
         SendCommand("SEARCH-ARCHIVE", term);
         string package;
@@ -57,21 +58,24 @@ public class RemoteBrowserClient : TCPClient
         }
         catch
         {
-            return RemoteBrowserInnerErrorHandler.CONNECTION_ENDED<string[]>(new string[] { });
+            return RemoteBrowserInnerErrorHandler.CONNECTION_ENDED<Search.DisplaySearchItem[]>(new Search.DisplaySearchItem[] { });
         }
         if (package == "EMPTY")
         {
-            return new string[] { };
+            return new Search.DisplaySearchItem[0];
         }
         else
         {
-            var arra = package.Split(';', '\t');
-            List<string> re = new List<string>();
-            foreach (var a in arra)
-                if (a != "")
-                    re.Add(a);
-            return re.ToArray();
+            List<Search.DisplaySearchItem> items = new List<Search.DisplaySearchItem>();
+            JSONNode pkg = JSON.Parse(package);
+            for (int i = 0; i < pkg["Items"].Count; i++)
+                items.Add(GetItem(pkg["Items"][i]));
+            return items.ToArray();
         }
+    }
+    public Search.DisplaySearchItem GetItem(JSONNode json)
+    {
+        return new Search.DisplaySearchItem(json["Name"].Value, json["Type"].Value, json["FullPath"].Value.Replace(";", "\\"));
     }
     public DirectoryList ListDirectory()
     {

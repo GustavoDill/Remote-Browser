@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
@@ -18,16 +17,18 @@
     <None Remove="copy-icon.png" />
     <None Remove="downloads.ico" />
     <None Remove="folder.png" />
+    <None Remove="Icons\return.ico" />
     <None Remove="search.ico" />
     <None Remove="settings.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="copy-icon.png" />
-    <EmbeddedResource Include="downloads.ico" />
-    <EmbeddedResource Include="folder.png" />
-    <EmbeddedResource Include="search.ico" />
-    <EmbeddedResource Include="settings.png" />
+    <EmbeddedResource Include="Icons\copy-icon.png" />
+    <EmbeddedResource Include="Icons\downloads.ico" />
+    <EmbeddedResource Include="Icons\folder.png" />
+    <EmbeddedResource Include="Icons\return.ico" />
+    <EmbeddedResource Include="Icons\search.ico" />
+    <EmbeddedResource Include="Icons\settings.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,28 +46,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="DownloadQueue.xaml.cs">
+    <Compile Update="Dialogs\DownloadQueue.xaml.cs">
       <DependentUpon>DownloadQueue.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Deta.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Update="DetaDetail.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="DetaMaster.xaml">
+    <EmbeddedResource Update="Dialogs\DetailDialog.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="DownloadQueue.xaml">
+    <EmbeddedResource Update="Dialogs\DownloadQueue.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Search.xaml">
+    <EmbeddedResource Update="Dialogs\Search.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Settings.xaml">
+    <EmbeddedResource Update="Dialogs\Settings.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
